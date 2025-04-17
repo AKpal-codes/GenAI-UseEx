@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Docparser</title>
+    </head>
+    <body>
+        <h1> Upload a business document</h1>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Upload</button>
+        </form>
+
+        {% if uploaded %}
+            <h2>Uploaded Successfully</h2>
+            <p>{{ file_name }}</p>
+            <p>Path: {{ file_path }}</p>
+        {% endif %}
+    </body>
+</html>
