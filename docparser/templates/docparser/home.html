@@ -12,9 +12,12 @@
         </form>
 
         {% if uploaded %}
-            <h2>Uploaded Successfully</h2>
-            <p>{{ file_name }}</p>
-            <p>Path: {{ file_path }}</p>
+            <h2>Extracted Text:</h2>
+            {% if error %}
+                <p style="color: red;">Error: {{ error }}</p>
+            {% else %}
+                <pre style="white-space: pre-wrap;">{{ text }}</pre>
+            {% endif %}
         {% endif %}
     </body>
 </html>

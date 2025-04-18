@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from .forms import DocumentUploadForm
+from .utils.extractor import extract_text
 import os
 # Create your views here.
 def home(request):
@@ -13,9 +14,16 @@ def home(request):
             with open(file_path, 'wb+') as destination:
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
+
+            try:
+                extracted_text = extract_text(file_path)
+                context['text'] = extracted_text
+            except Exception as e:
+                context['error'] = str(e)
+
             context['uploaded'] = True
             context['file_name'] = uploaded_file.name
-            context['file_path'] = file_path
+            
     else:
         form = DocumentUploadForm()
     context['form'] = form
