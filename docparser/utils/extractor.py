@@ -16,9 +16,9 @@ def extract_text_from_docx(file_path):
     return text
 
 def extract_text_from_txt(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
-        text = file.read()
-    return text
+    with open(file_path, 'r', encoding='utf-8') as f:
+            return f.read()
+
 
 def extract_text(file_path):
     if file_path.endswith('.pdf'):

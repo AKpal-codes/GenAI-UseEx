@@ -18,3 +18,4 @@ staticfiles/
 
 #extra
 Thumbs.db
+*.env

@@ -19,5 +19,9 @@
                 <pre style="white-space: pre-wrap;">{{ text }}</pre>
             {% endif %}
         {% endif %}
+        {% if genai_output %}
+            <h2>Generated Output:</h2>
+            <pre style="white-space: pre-wrap;">{{ genai_output }}</pre>
+        {% endif %}
     </body>
 </html>
