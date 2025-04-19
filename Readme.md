@@ -25,6 +25,10 @@ UseEx is a Django-based web application powered by GenAI that extracts **use cas
 
 # How to run
 
+- Pre-requisites
+    Google GenerativeAI API key required store it in .env file in "GOOGLE_API_KEY" variable
+    Python3 should be installed
+
 - clone the repository
     git clone https://github.com/AKpal-codes/GenAI-UseEx.git
 - create and activate a python virtual environment
