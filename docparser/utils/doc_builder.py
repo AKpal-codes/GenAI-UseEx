@@ -2,33 +2,21 @@ from docx import Document
 import os
 import uuid
 import json
-import re
-
-def clean_genai_response(response_text):
-    # Remove triple backticks and optional `json` label
-    pattern = r"```(?:json)?\n(.*?)\n```"
-    match = re.search(pattern, response_text, re.DOTALL)
-
-    if match:
-        return match.group(1).strip()
-    
-    # If no backticks found, assume raw JSON
-    return response_text.strip()
 
 def save_response_to_word(genai_response, filename=None):
-    genai_response_clean = clean_genai_response(genai_response)
-    if genai_response_clean.startswith('"') and genai_response_clean.endswith('"'):
-        genai_response_clean = genai_response_clean[1:-1]
-        genai_response_clean = genai_response_clean.replace('\\"', '"')
+    
+    if genai_response.startswith('"') and genai_response.endswith('"'):
+        genai_response = genai_response[1:-1]
+        genai_response = genai_response.replace('\\"', '"')
 
     document = Document()
     document.add_heading("Business Document Analysis", 0)
 
-    if isinstance(genai_response_clean, str):
+    if isinstance(genai_response, str):
         try:
-            if not genai_response_clean.strip():
+            if not genai_response.strip():
                 raise ValueError("The genai_response is empty or invalid.")
-            genai_response = json.loads(genai_response_clean)
+            genai_response = json.loads(genai_response)
         except json.JSONDecodeError as e:
             raise ValueError(f"Invalid JSON data: {e}")
 

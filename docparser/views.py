@@ -5,6 +5,19 @@ from .utils.extractor import extract_text
 from .utils.genai import analyze_document_with_genai
 from .utils.doc_builder import save_response_to_word
 import os
+import json
+import re
+
+def clean_genai_response(response_text):
+    # Remove triple backticks and optional `json` label
+    pattern = r"```(?:json)?\n(.*?)\n```"
+    match = re.search(pattern, response_text, re.DOTALL)
+
+    if match:
+        return match.group(1).strip()
+    
+    # If no backticks found, assume raw JSON
+    return response_text.strip()
 
 # Create your views here.
 def home(request):
@@ -28,14 +41,29 @@ def home(request):
                     context['error'] = "The extracted text is empty. Please try a different file."
                 else:
                     genai_output = analyze_document_with_genai(extracted_text)
-                    context['text'] = extracted_text
-                    context['genai_output'] = genai_output
+                    genai_response = clean_genai_response(genai_output)
+                    parsed_response = json.loads(genai_response)
+                    modules = parsed_response.get("modules", [])
+                    use_cases = parsed_response.get("use_cases", [])
+                    stakeholders = parsed_response.get("stakeholders", [])
+                    risks = parsed_response.get("risks", [])
+                    timeline_priority = parsed_response.get("timeline_priority", [])
+
+                    context.update({
+                        'text': extracted_text,
+                        'genai_output': genai_response,
+                        'modules': modules,
+                        'use_cases': use_cases,
+                        'stakeholders': stakeholders,
+                        'risks': risks,
+                        'timeline_priority': timeline_priority
+                    })
 
                     if os.path.exists(file_path):
                         os.remove(file_path)
 
                     try:
-                        download_path = save_response_to_word(genai_output)
+                        download_path = save_response_to_word(genai_response)
                         context['download_link'] = '/' + download_path  # for <a href> in template                        
                     except Exception as e:
                         context['download_error'] = f"Could not generate Word file: {str(e)}"

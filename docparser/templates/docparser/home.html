@@ -1,37 +1,203 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
     <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
         <title>Docparser</title>
+        <!-- Favicon-->
+        <link rel="icon" type="image/x-icon" href="{% static 'assets/favicon.ico' %}" />
+        <!-- Bootstrap Icons-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
+        <!-- Google fonts-->
+        <link href="https://fonts.googleapis.com/css?family=Merriweather+Sans:400,700" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic" rel="stylesheet" type="text/css" />
+        <!-- SimpleLightbox plugin CSS-->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.css" rel="stylesheet" />
+        <!-- Core theme CSS (includes Bootstrap)-->
+        <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
     </head>
-    <body>
-        <h1> Upload a business document</h1>
-        <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Upload</button>
-        </form>
+    <body id="page-top">
+        <!-- Masthead-->
+        <header class="masthead">
+            <div class="container px-4 px-lg-5 h-100">
+                <div class="row gx-4 gx-lg-5 h-100 align-items-center justify-content-center text-center">
+                    <div class="col-lg-8 align-self-end">
+                        <h1 class="text-white font-weight-bold">UseEx</h1>
+                        <hr class="divider" />
+                    </div>
+                    <div class="col-lg-8 align-self-baseline">
+                        <p class="text-white-75 mb-5">Extract Usecases, Modules & Functionalities and other Business Information in well Structured Document from an Unstructured Business Document !</p>
+                        <form method="post" enctype="multipart/form-data">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            
+                            <button type="submit" class="btn btn-primary btn-xl">Submit a business Document</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </header>
+        <!-- About-->
+        <section class="page-section bg-primary" id="about">
+            <div class="container px-4 px-lg-5">
+                <div class="row gx-4 gx-lg-5 justify-content-center">
+                    <div class="col-lg-8 text-center">
+                        {% if modules %}
+                            <h2 class="text-white mt-0">Extracted Modules</h2>
+                            <hr class="divider divider-light" />
+                            <table class="table table-bordered table-light">
+                                <thead>
+                                    <tr>
+                                        <th>Module Name</th>
+                                        <th>Functionality</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for m in modules %}
+                                    <tr>
+                                        <td>{{ m.name }}</td>
+                                        <td>{{ m.functionality }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
 
-        {% if uploaded %}
-            <h2>Extracted Text:</h2>
-            {% if error %}
-                <p style="color: red;">Error: {{ error }}</p>
-            {% else %}
-                <pre style="white-space: pre-wrap;">{{ text }}</pre>
-            {% endif %}
-        {% endif %}
-        {% if genai_output %}
-            <h2>Generated Output:</h2>
-            <pre style="white-space: pre-wrap;">{{ genai_output }}</pre>
-        {% endif %}
-        {% if download_link %}
-        <div class="download-section mt-4">
-            <a href="{{ download_link }}" class="btn btn-success" download>
-            Download Structured Report (Word)
-            </a>
-        </div>
-        {% elif download_error %}
-        <p class="text-danger">{{ download_error }}</p>
-        {% endif %}
+                        {% if use_cases %}
+                            <h2 class="text-white mt-4">Use Cases</h2>
+                            <ul class="list-group mb-4">
+                                {% for use_case in use_cases %}
+                                <li class="list-group-item">{{ use_case }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
 
+                        {% if stakeholders %}
+                            <h2 class="text-white mt-4">Stakeholders</h2>
+                            <table class="table table-bordered table-light">
+                                <thead>
+                                    <tr>
+                                        <th>Role</th>
+                                        <th>Responsibility</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for stakeholder in stakeholders %}
+                                    <tr>
+                                        <td>{{ stakeholder.role }}</td>
+                                        <td>{{ stakeholder.responsibility }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+
+                        {% if risks %}
+                            <h2 class="text-white mt-4">Risks Involved</h2>
+                            <ul class="list-group mb-4">
+                                {% for risk in risks %}
+                                <li class="list-group-item">{{ risk }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+
+                        {% if timeline_priority %}
+                            <h2 class="text-white mt-4">Extracted Timeline</h2>
+                            <table class="table table-bordered table-light">
+                                <thead>
+                                    <tr>
+                                        <th>Module</th>
+                                        <th>Priority</th>
+                                        <th>Expected Timeline</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for mod in timeline_priority %}
+                                    <tr>
+                                        <td>{{ mod.module }}</td>
+                                        <td>{{ mod.priority }}</td>
+                                        <td>{{ mod.expected_timeline }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% endif %}
+
+                        {% if error %}
+                            <p class="text-danger mt-4">Error: {{ error }}</p>
+                        {% endif %}
+
+                        {% if download_link or download_error %}
+                            <h2 class="text-white mt-4">Download Structured Report</h2>
+                        {% endif %}
+                        {% if download_link %}
+                        <div class="download-section mt-4">
+                            <a href="{{ download_link }}" download>
+                                <button class="btn btn-light btn-xl">Download Structured Report (Word)</button>
+                            </a>
+                        </div>
+                        {% elif download_error %}
+                        <p class="text-danger">{{ download_error }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Services-->
+        <section class="page-section" id="services">
+            <div class="container px-4 px-lg-5">
+                <h2 class="text-center mt-0">At Your Service</h2>
+                <hr class="divider" />
+                <div class="row gx-4 gx-lg-5">
+                    <div class="col-lg-3 col-md-6 text-center">
+                        <div class="mt-5">
+                            <div class="mb-2"><i class="bi-gem fs-1 text-primary"></i></div>
+                            <h3 class="h4 mb-2">Sturdy Themes</h3>
+                            <p class="text-muted mb-0">Our themes are updated regularly to keep them bug free!</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 text-center">
+                        <div class="mt-5">
+                            <div class="mb-2"><i class="bi-laptop fs-1 text-primary"></i></div>
+                            <h3 class="h4 mb-2">Up to Date</h3>
+                            <p class="text-muted mb-0">All dependencies are kept current to keep things fresh.</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 text-center">
+                        <div class="mt-5">
+                            <div class="mb-2"><i class="bi-globe fs-1 text-primary"></i></div>
+                            <h3 class="h4 mb-2">Ready to Publish</h3>
+                            <p class="text-muted mb-0">You can use this design as is, or you can make changes!</p>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 text-center">
+                        <div class="mt-5">
+                            <div class="mb-2"><i class="bi-heart fs-1 text-primary"></i></div>
+                            <h3 class="h4 mb-2">Made with Love</h3>
+                            <p class="text-muted mb-0">Is it really open source if it's not made with love?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Footer-->
+        <footer class="bg-light py-5">
+            <div class="container px-4 px-lg-5"><div class="small text-center text-muted">Copyright &copy; 2025 - UseEx</div></div>
+        </footer>
+        <!-- Bootstrap core JS-->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+        <!-- SimpleLightbox plugin JS-->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/SimpleLightbox/2.1.0/simpleLightbox.min.js"></script>
+        <!-- Core theme JS-->
+        <script src="{% static 'js/scripts.js' %}"></script>
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <!-- * *                               SB Forms JS                               * *-->
+        <!-- * * Activate your form at https://startbootstrap.com/solution/contact-forms * *-->
+        <!-- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *-->
+        <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
     </body>
 </html>
